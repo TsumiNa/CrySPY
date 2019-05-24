@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-from __future__ import division
-
-import ConfigParser
+import configparser
 import os
 
 
@@ -12,7 +9,7 @@ def readin():
     # ---------- read cryspy.in
     if not os.path.isfile('cryspy.in'):
         raise IOError('Could not find cryspy.in file')
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.read('cryspy.in')
 
     # ---------- basic
@@ -74,11 +71,11 @@ def readin():
             raise ValueError('score must be TS, EI, or PI, check score')
         try:
             num_rand_basis = config.getint('BO', 'num_rand_basis')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             num_rand_basis = 0
         try:
             cdev = config.getfloat('BO', 'cdev')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             cdev = 0.001
         dscrpt = config.get('BO', 'dscrpt')
         if dscrpt == 'FP':
@@ -88,11 +85,11 @@ def readin():
         # -- parameters for f-fingerprint (optional)
         try:
             fp_rmin = config.getfloat('BO', 'fp_rmin')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             fp_rmin = 0.5
         try:
             fp_rmax = config.getfloat('BO', 'fp_rmax')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             fp_rmax = 5.0
         if fp_rmin < 0.0:
             raise ValueError('fp_rmin < 0, check fp_rmin')
@@ -100,20 +97,20 @@ def readin():
             raise ValueError('fp_rmax < fp_rmin, check fp_rmin and fp_rmax')
         try:
             fp_npoints = config.getint('BO', 'fp_npoints')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             fp_npoints = 50
         if fp_npoints <= 0:
             raise ValueError('fp_npoints <= 0, check fp_npoints')
         try:
             fp_sigma = config.getfloat('BO', 'fp_sigma')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             fp_sigma = 0.2
         if fp_sigma < 0:
             raise ValueError('fp_sigma < 0, check fp_sigma')
         # -- BO option
         try:
             maxgen = config.getint('BO', 'maxgen')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             maxgen = 0
         if maxgen < 0:
             raise ValueError('maxgen must be non-negative int')
@@ -126,7 +123,7 @@ def readin():
         nselect = config.getint('LAQA', 'nselect')
         try:
             weight_laqa = config.getfloat('LAQA', 'weight_laqa')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             weight_laqa = 1.0
 
     # ---------- EA
@@ -169,7 +166,7 @@ def readin():
             raise ValueError('not len(kppvol) == nstage, check kppvol and nstage')
         try:
             force_gamma = config.getboolean('VASP', 'force_gamma')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             force_gamma = False
 
     # ---------- QE
@@ -186,7 +183,7 @@ def readin():
             raise ValueError('not len(kppvol) == nstage, check kppvol and nstage')
         try:
             force_gamma = config.getboolean('QE', 'force_gamma')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             force_gamma = False
 
     # ---------- soiap
@@ -209,7 +206,7 @@ def readin():
         lammps_outfile = config.get('LAMMPS', 'lammps_outfile')
         try:
             lammps_potential = config.get('LAMMPS', 'lammps_potential')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             lammps_potential = None
         lammps_data = config.get('LAMMPS', 'lammps_data')
         kpt_flag = False
@@ -226,19 +223,19 @@ def readin():
     # ------ read intput variables
     try:
         maxcnt = config.getint('option', 'maxcnt')
-    except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
+    except (configparser.NoOptionError, configparser.NoSectionError):
         maxcnt = 200
     try:
         stop_chkpt = config.getint('option', 'stop_chkpt')
-    except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
+    except (configparser.NoOptionError, configparser.NoSectionError):
         stop_chkpt = 0
     try:
         symprec = config.getfloat('option', 'symprec')
-    except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
+    except (configparser.NoOptionError, configparser.NoSectionError):
         symprec = 0.001
     try:
         spgnum = config.get('option', 'spgnum')
-    except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
+    except (configparser.NoOptionError, configparser.NoSectionError):
         spgnum = 'all'
     if spgnum == '0':
         spgnum = 0
@@ -248,36 +245,36 @@ def readin():
         spgnum = spglist(spgnum)
     try:
         load_struc_flag = config.getboolean('option', 'load_struc_flag')
-    except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
+    except (configparser.NoOptionError, configparser.NoSectionError):
         load_struc_flag = False
     try:
         stop_next_struc = config.getboolean('option', 'stop_next_struc')
-    except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
+    except (configparser.NoOptionError, configparser.NoSectionError):
         stop_next_struc = False
     try:
         append_struc_ea = config.getboolean('option', 'append_struc_ea')
-    except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
+    except (configparser.NoOptionError, configparser.NoSectionError):
         append_struc_ea = False
     try:
         energy_step_flag = config.getboolean('option', 'energy_step_flag')
         # -- only VASP or QE for now
         if calc_code in ['soiap', 'LAMMPS']:
             energy_step_flag = False
-    except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
+    except (configparser.NoOptionError, configparser.NoSectionError):
         energy_step_flag = False
     try:
         struc_step_flag = config.getboolean('option', 'struc_step_flag')
         # -- only VASP or QE for now
         if calc_code in ['soiap', 'LAMMPS']:
             struc_step_flag = False
-    except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
+    except (configparser.NoOptionError, configparser.NoSectionError):
         struc_step_flag = False
     try:
         fs_step_flag = config.getboolean('option', 'fs_step_flag')
         # -- only VASP or QE for now
         if calc_code in ['soiap', 'LAMMPS']:
             fs_step_flag = False
-    except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
+    except (configparser.NoOptionError, configparser.NoSectionError):
         fs_step_flag = False
     if algo == 'LAQA':
         fs_step_flag = True
@@ -289,7 +286,7 @@ def readin():
         global fit_reverse, n_fittest
         global slct_func, t_size, a_rlt, b_rlt
         global crs_lat, crs_func, nat_diff_tole, ntimes, sigma_st,  maxcnt_ea
-        global maxgen
+#         global maxgen
         # global restart_gen
         # ------ read intput variables
         # -- number of structures
@@ -318,11 +315,11 @@ def readin():
         # -- fittest
         try:
             fit_reverse = config.getboolean('EA', 'fit_reverse')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             fit_reverse = False
         try:
             n_fittest = config.getint('EA', 'n_fittest')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             n_fittest = 0
         if n_fittest < 0:
             raise ValueError('n_fittest must be zero or positive int')
@@ -333,67 +330,67 @@ def readin():
         if slct_func == 'TNM':
             try:
                 t_size = config.getint('EA', 't_size')
-            except ConfigParser.NoOptionError:
+            except configparser.NoOptionError:
                 t_size = 3
             if t_size < 2:
                 raise ValueError('t_size must be greater than or equal to 2')
         elif slct_func == 'RLT':
             try:
                 a_rlt = config.getfloat('EA', 'a_rlt')
-            except ConfigParser.NoOptionError:
+            except configparser.NoOptionError:
                 a_rlt = 2.0
             try:
                 b_rlt = config.getfloat('EA', 'b_rlt')
-            except ConfigParser.NoOptionError:
+            except configparser.NoOptionError:
                 b_rlt = 1.0
         # -- crossover
         try:
             crs_lat = config.get('EA', 'crs_lat')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             crs_lat = 'equal'
         if crs_lat not in ['equal', 'random']:
             raise ValueError('crs_lat must be equal or random')
         try:
             crs_func = config.get('EA', 'crs_func')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             crs_func = 'OP'
         if crs_func not in ['OP', 'TP']:
             raise ValueError('crs_func must be OP or TP')
         try:
             nat_diff_tole = config.getint('EA', 'nat_diff_tole')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             nat_diff_tole = 4
         if nat_diff_tole < 0:
             raise ValueError('nat_diff_tole must be nen-negative int')
         # -- permutation
         try:
             ntimes = config.getint('EA', 'ntimes')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             ntimes = 1
         if ntimes <= 0:
             raise ValueError('ntimes must be positive int')
         try:
             sigma_st = config.getfloat('EA', 'sigma_st')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             sigma_st = 0.5
         if sigma_st <= 0:
             raise ValueError('simga_st must be positive float')
         # -- common
         try:
             maxcnt_ea = config.getint('EA', 'maxcnt_ea')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             maxcnt_ea = 100
         # -- EA option
         try:
             maxgen = config.getint('EA', 'maxgen')
-        except ConfigParser.NoOptionError:
+        except configparser.NoOptionError:
             maxgen = 0
         if maxgen < 0:
             raise ValueError('maxgen must be non-negative int')
         # # -- restart option
         # try:
         #     restart_gen = config.getint('EA', 'restart_gen')
-        # except ConfigParser.NoOptionError:
+        # except configparser.NoOptionError:
         #     restart_gen = 0
 
 
