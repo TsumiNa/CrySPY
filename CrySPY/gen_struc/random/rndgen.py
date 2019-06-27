@@ -1,19 +1,27 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-
 import os
 import subprocess
 
-from gen_cell import rndgen_lattice, calc_latvec, calc_cos
-from with_spg.fw import fw_input, gen_wypos
-from wo_spg.gen_coordinate import rndgen_coord
+from .gen_cell import rndgen_lattice, calc_latvec, calc_cos
+from .with_spg.fw import fw_input, gen_wypos
+from .wo_spg.gen_coordinate import rndgen_coord
 from ..struc_util import out_poscar
 
 
-def rndgen_wo_spg(nstruc, natot, atype, nat, id_offset=0, minlen=4, maxlen=10, dangle=20, mindist=1.5,
-                  maxcnt=200, symprec=0.001, init_pos_path=None):
+def rndgen_wo_spg(nstruc,
+                  natot,
+                  atype,
+                  nat,
+                  id_offset=0,
+                  minlen=4,
+                  maxlen=10,
+                  dangle=20,
+                  mindist=1.5,
+                  maxcnt=200,
+                  symprec=0.001,
+                  init_pos_path=None):
     '''
     Randomly generate structures without space group information
     '''
@@ -32,7 +40,7 @@ def rndgen_wo_spg(nstruc, natot, atype, nat, id_offset=0, minlen=4, maxlen=10, d
         spg_in, a, b, c, alpha, beta, gamma = rndgen_lattice(spgnum, minlen, maxlen, dangle)
         va, vb, vc = calc_latvec(a, b, c, alpha, beta, gamma)
         tmp_struc = rndgen_coord(natot, atype, nat, va, vb, vc, mindist, maxcnt)
-        if tmp_struc is not None:    # success of generation
+        if tmp_struc is not None:  # success of generation
             # ------ check actual space group using pymatgen
             try:
                 spg_sym, spg_num = tmp_struc.get_space_group_info(symprec=symprec)
@@ -43,7 +51,7 @@ def rndgen_wo_spg(nstruc, natot, atype, nat, id_offset=0, minlen=4, maxlen=10, d
             cID = len(init_struc_data) + id_offset
             init_struc_data[cID] = tmp_struc
             print('Structure ID {0:>8} was generated. Space group: {1:>3} --> {2:>3} {3}'.format(
-                   cID, spg_in, spg_num, spg_sym))
+                cID, spg_in, spg_num, spg_sym))
             # ------ save poscar
             if init_pos_path is not None:
                 out_poscar(tmp_struc, cID, init_pos_path)
@@ -53,10 +61,19 @@ def rndgen_wo_spg(nstruc, natot, atype, nat, id_offset=0, minlen=4, maxlen=10, d
     return init_struc_data
 
 
-def rndgen_spg(nstruc, natot, atype, nat, spgnum='all', id_offset=0,
-               minlen=4, maxlen=10, dangle=20, mindist=1.5,
-               maxcnt=200, symprec=0.001,
-               init_pos_path=None, fwpath='./find_wy'):
+def rndgen_spg(nstruc,
+               atype,
+               nat,
+               spgnum='all',
+               id_offset=0,
+               minlen=4,
+               maxlen=10,
+               dangle=20,
+               mindist=1.5,
+               maxcnt=200,
+               symprec=0.001,
+               init_pos_path=None,
+               fwpath='./find_wy'):
     '''
     Randomly generate structures with space group information
     '''
@@ -87,17 +104,17 @@ def rndgen_spg(nstruc, natot, atype, nat, spgnum='all', id_offset=0,
                 wyflag = False
                 break
             wyflag, tmp_struc = gen_wypos(atype, mindist, maxcnt)
-            if wyflag is False:    # Failure
+            if wyflag is False:  # Failure
                 os.remove('POS_WY_SKEL_ALL.json')
                 cnt += 1
                 continue
-            else:    # Success
-                rm_files()    # clean
-                break         # break fw_input loop
+            else:  # Success
+                rm_files()  # clean
+                break  # break fw_input loop
 
-        if wyflag is False:    # maximum trial or no POS_WY_SKEL_ALL.json file
-            rm_files()    # clean
-            continue      # to new fw_input
+        if wyflag is False:  # maximum trial or no POS_WY_SKEL_ALL.json file
+            rm_files()  # clean
+            continue  # to new fw_input
 
         # ------ check actual space group using pymatgen
         try:
@@ -110,7 +127,7 @@ def rndgen_spg(nstruc, natot, atype, nat, spgnum='all', id_offset=0,
         cID = len(init_struc_data) + id_offset
         init_struc_data[cID] = tmp_struc
         print('Structure ID {0:>8} was generated. Space group: {1:>3} --> {2:>3} {3}'.format(
-               cID, spg_in, spg_num, spg_sym))
+            cID, spg_in, spg_num, spg_sym))
 
         # ------ save poscar
         if init_pos_path is not None:

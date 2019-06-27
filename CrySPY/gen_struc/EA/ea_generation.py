@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-
 from ..struc_util import out_poscar
 
 
@@ -57,8 +55,8 @@ class EA_generation(object):
             else:
                 raise TypeError('init_pos_path must be str or None')
         # ---------- initialize data
-        self.offspring = {}    # structure data
-        self.parents = {}    # tuple of parents ID
+        self.offspring = {}  # structure data
+        self.parents = {}  # tuple of parents ID
         self.operation = {}
 
     def gen_crossover(self, n_crsov, co):
@@ -126,13 +124,13 @@ class EA_generation(object):
         struc_cnt = 0
         while struc_cnt < n_perm:
             # ------ select parents
-            pid, = self.sp.get_parents(n_parent=1)    # comma for list[0]
+            pid, = self.sp.get_parents(n_parent=1)  # comma for list[0]
             # ------ generate child
             child = pm.gen_child(self.sp.struc_data[pid])
             # ------ success
             if child is not None:
                 self.offspring[self.cID] = child
-                self.parents[self.cID] = (pid, )    # tuple
+                self.parents[self.cID] = (pid,)  # tuple
                 self.operation[self.cID] = 'permutation'
                 try:
                     spg_sym, spg_num = child.get_space_group_info(symprec=self.symprec)
@@ -169,13 +167,13 @@ class EA_generation(object):
         struc_cnt = 0
         while struc_cnt < n_strain:
             # ------ select parents
-            pid, = self.sp.get_parents(n_parent=1)    # comma for list[0]
+            pid, = self.sp.get_parents(n_parent=1)  # comma for list[0]
             # ------ generate child
             child = st.gen_child(self.sp.struc_data[pid])
             # ------ success
             if child is not None:
                 self.offspring[self.cID] = child
-                self.parents[self.cID] = (pid, )    # tuple
+                self.parents[self.cID] = (pid,)  # tuple
                 self.operation[self.cID] = 'strain'
                 try:
                     spg_sym, spg_num = child.get_space_group_info(symprec=self.symprec)

@@ -7,8 +7,6 @@
 #
 # --------------------------------------------------------------------------
 
-from __future__ import print_function
-
 import json
 
 import numpy as np
@@ -58,7 +56,7 @@ def gen_wypos(atype, mindist, maxcnt):
     n_uniq, wydata_eq_atom = get_wydata_eq_atom(wydata)
     eq_atomnames = {}
     eq_positions = {}
-    for key, value in sorted(n_uniq.items(), key=lambda x: x[1]):    # equivalent atom loop
+    for key, value in sorted(n_uniq.items(), key=lambda x: x[1]):  # equivalent atom loop
         # ------ distribute eq atoms. first, special (num_uniqvar = 0), then, others
         cnt = 0
         while True:
@@ -80,20 +78,20 @@ def gen_wypos(atype, mindist, maxcnt):
             # -- check minimum distance
             spgstruc = Structure(plat, atomnames, cart, coords_are_cartesian=True)
             if check_distance(spgstruc, atype, mindist) is False:
-                cnt = maxcnt + 1 if value == 0 else cnt + 1    # num_uniqvar = 0 --> value == 0
+                cnt = maxcnt + 1 if value == 0 else cnt + 1  # num_uniqvar = 0 --> value == 0
                 if maxcnt < cnt:
-                    return False, spgstruc    # spgstruc is dummy
+                    return False, spgstruc  # spgstruc is dummy
             else:
-                break    # break while loop --> next eq atoms
+                break  # break while loop --> next eq atoms
     return True, spgstruc
 
 
 def get_wydata_eq_atom(wydata):
-    i = 0    # count eq_atom, not atom
-    n_uniq = {}    # num_uniqvar each eq_atom
-    wydata_eq_atom = {}    # wydata each eq_atom
+    i = 0  # count eq_atom, not atom
+    n_uniq = {}  # num_uniqvar each eq_atom
+    wydata_eq_atom = {}  # wydata each eq_atom
     for specie in wydata['atoms']:
-        for wydata2 in specie:    # equivalent atom loop
+        for wydata2 in specie:  # equivalent atom loop
             n_uniq[i] = wydata2[0]['num_uniqvar']
             wydata_eq_atom[i] = wydata2
             i += 1

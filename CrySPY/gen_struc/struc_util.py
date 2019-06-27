@@ -12,10 +12,10 @@ def out_poscar(struc, cID, fpath):
     # ---------- poscar format
     pos = struc.to(fmt='poscar')
     pos = pos.split('\n')
-    blank_indx = pos.index('')    # cut unnecessary parts
+    blank_indx = pos.index('')  # cut unnecessary parts
     pos = pos[:blank_indx]
-    pos[0] = 'ID_{}'.format(cID)    # replace with ID
-    lines = [line+'\n' for line in pos]
+    pos[0] = 'ID_{}'.format(cID)  # replace with ID
+    lines = [line + '\n' for line in pos]
 
     # ---------- append POSCAR
     with open(fpath, 'a') as f:
@@ -26,10 +26,10 @@ def out_poscar(struc, cID, fpath):
 def out_cif(struc, cID, tmp_path, fpath, symprec=0.1):
     # ---------- opt_CIFS
     cif = CifWriter(struc, symprec=symprec)
-    cif.write_file(tmp_path+'tmp.cif')
+    cif.write_file(tmp_path + 'tmp.cif')
 
     # ---------- correct title for VESTA (need to delete '_chemical_formula_sum')
-    with open(tmp_path+'tmp.cif', 'r') as fcif:
+    with open(tmp_path + 'tmp.cif', 'r') as fcif:
         ciflines = fcif.readlines()
     ciflines[1] = 'data_ID_{}\n'.format(cID)
     if ciflines[11][:21] == '_chemical_formula_sum':
@@ -43,7 +43,7 @@ def out_cif(struc, cID, tmp_path, fpath, symprec=0.1):
             foptcif.write(line)
 
     # ---------- clean tmp.cif
-    os.remove(tmp_path+'tmp.cif')
+    os.remove(tmp_path + 'tmp.cif')
 
 
 def frac_coord_zero_one(struc_in):
@@ -56,7 +56,7 @@ def frac_coord_zero_one(struc_in):
     '''
     struc = struc_in.copy()
     for i in range(struc.num_sites):
-        struc[i] = struc[i].to_unit_cell
+        struc[i] = struc[i].to_unit_cell()
     return struc
 
 
@@ -100,7 +100,7 @@ def check_distance(struc, atype, mindist, check_all=False):
 
     # ---------- initialize
     if check_all:
-        dist_list = []    # [(i, j, dist), (i, j, dist), ...]
+        dist_list = []  # [(i, j, dist), (i, j, dist), ...]
 
     # ---------- in case there is only one atom
     if struc.num_sites == 1:
@@ -127,8 +127,8 @@ def check_distance(struc, atype, mindist, check_all=False):
     # ---------- return
     if check_all:
         if dist_list:
-            dist_list.sort()    # sort
+            dist_list.sort()  # sort
             return dist_list
         else:
-            return dist_list    # dist_list is vacant list
+            return dist_list  # dist_list is vacant list
     return True

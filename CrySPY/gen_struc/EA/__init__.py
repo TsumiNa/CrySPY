@@ -1,2 +1,4 @@
 # -*- coding: utf-8 -*-
-from . import ea_generation, crossover, permutation, strain
+from .crossover import Crossover
+from .permutation import Permutation
+from .strain import Strain

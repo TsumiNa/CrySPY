@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
-
 import numpy as np
 from pymatgen import Structure
 from pymatgen.analysis.structure_matcher import StructureMatcher
@@ -45,12 +43,17 @@ class Select_parents(object):
     self.get_parents(n_parent)
     '''
 
-    def __init__(self, struc_data, fitness, elite_struc=None, elite_fitness=None,
-                 fit_reverse=False, n_fittest=0):
+    def __init__(self,
+                 struc_data,
+                 fitness,
+                 elite_struc=None,
+                 elite_fitness=None,
+                 fit_reverse=False,
+                 n_fittest=0):
         # ---------- check args
         # ------ data
-        self.struc_data, self.fitness = self._check_data(struc_data, fitness,
-                                                         elite_struc, elite_fitness)
+        self.struc_data, self.fitness = self._check_data(struc_data, fitness, elite_struc,
+                                                         elite_fitness)
         # ------ fit_reverse
         if not isinstance(fit_reverse, bool):
             raise TypeError('fit_reverse should be bool')
@@ -71,17 +74,20 @@ class Select_parents(object):
         # ---------- ranking of fitness: list of id
         self.ranking = sorted(self.fitness, key=self.fitness.get, reverse=fit_reverse)
         # ---------- remove duplicated structures and cut by survival of the fittest
-        self._dedupe()    # get self.ranking_dedupe
+        self._dedupe()  # get self.ranking_dedupe
 
     def _check_data(self, struc_data, fitness, elite_struc, elite_fitness):
         # ---------- struc_data and fitness
         if isinstance(struc_data, dict) and isinstance(fitness, dict):
-            pass    # if dict, allow len(struc_data) != len(fitness)
-        elif isinstance(struc_data, dict) and (isinstance(fitness, list) or isinstance(fitness, np.ndarray)):
+            pass  # if dict, allow len(struc_data) != len(fitness)
+        elif isinstance(struc_data, dict) and (isinstance(fitness, list) or
+                                               isinstance(fitness, np.ndarray)):
             raise TypeError('struc_data is dict, so fitness should also be dict')
-        elif isinstance(fitness, dict) and (isinstance(struc_data, list) or isinstance(struc_data, np.ndarray)):
+        elif isinstance(fitness, dict) and (isinstance(struc_data, list) or
+                                            isinstance(struc_data, np.ndarray)):
             raise TypeError('fitness is dict, so struc_data should also be dict')
-        elif isinstance(struc_data, list) and (isinstance(fitness, list) or isinstance(fitness, np.ndarray)):
+        elif isinstance(struc_data, list) and (isinstance(fitness, list) or
+                                               isinstance(fitness, np.ndarray)):
             # ------ check number of data
             if not len(struc_data) == len(fitness):
                 raise ValueError('not len(struc_data) == len(fitness)')
@@ -114,22 +120,22 @@ class Select_parents(object):
         # ------ initialize
         ncheck = 5
         self.ranking_dedupe = []
-        smatcher = StructureMatcher()    # instantiate
+        smatcher = StructureMatcher()  # instantiate
         # ------ register not dupulicated data
         for i_id in self.ranking:
             # -- init dupl_flag
             dupl_flag = False
             # -- for structure is None
             if self.struc_data[i_id] is None:
-                continue    # next i_id
+                continue  # next i_id
             # -- duplication check
-            for j_id in self.ranking_dedupe[:-(ncheck+1):-1]:
+            for j_id in self.ranking_dedupe[:-(ncheck + 1):-1]:
                 if smatcher.fit(self.struc_data[i_id], self.struc_data[j_id]):
                     dupl_flag = True
                     break
             # -- register or skip
             if dupl_flag:
-                continue    # next i_id
+                continue  # next i_id
             else:
                 self.ranking_dedupe.append(i_id)
                 # n_fittest
@@ -172,7 +178,7 @@ class Select_parents(object):
         parent_id = []
         while len(parent_id) < n_parent:
             t_indx = np.random.choice(len(self.ranking_dedupe), self.t_size, replace=False)
-            if parent_id:    # not allow the same parent in crossover
+            if parent_id:  # not allow the same parent in crossover
                 if parent_id[0] == self.ranking_dedupe[min(t_indx)]:
                     continue
             parent_id.append(self.ranking_dedupe[min(t_indx)])
@@ -192,7 +198,7 @@ class Select_parents(object):
         # ---------- calculate cumulative fitness
         fitness_dedupe = np.array([self.fitness[i] for i in self.ranking_dedupe])
         fitness_dedupe = self._linear_scaling(fitness_dedupe, a, b)
-        self.cum_fit = np.cumsum(fitness_dedupe/fitness_dedupe.sum())
+        self.cum_fit = np.cumsum(fitness_dedupe / fitness_dedupe.sum())
         # ---------- set self.get_parents()
         self.get_parents = self._roulette
 
@@ -209,9 +215,10 @@ class Select_parents(object):
         # ---------- select parents
         parent_id = []
         while len(parent_id) < n_parent:
-            indx_array = np.where(self.cum_fit < np.random.rand())[0]    # if all false, array is vacant
-            select_indx = indx_array[-1] + 1 if indx_array.size != 0 else 0    # consider vacant or not
-            if parent_id:    # not allow same parent for crossover
+            indx_array = np.where(
+                self.cum_fit < np.random.rand())[0]  # if all false, array is vacant
+            select_indx = indx_array[-1] + 1 if indx_array.size != 0 else 0  # consider vacant or not
+            if parent_id:  # not allow same parent for crossover
                 if parent_id[0] == self.ranking_dedupe[select_indx]:
                     continue
             parent_id.append(self.ranking_dedupe[select_indx])
@@ -238,6 +245,6 @@ class Select_parents(object):
         # ------ in case the same values
         if fmax == fmin:
             return fitness
-        fitness = (a - b)/(fmax - fmin)*fitness + (b*fmax - a*fmin)/(fmax - fmin)
+        fitness = (a - b) / (fmax - fmin) * fitness + (b * fmax - a * fmin) / (fmax - fmin)
         # ---------- return
         return fitness

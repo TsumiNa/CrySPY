@@ -99,3 +99,10 @@ cal_fingerprint
 
 # Mac
 .DS_Store
+
+# custom
+/gen_struc
+*.pd
+*.pkl
+*.cif
+/.vscode
