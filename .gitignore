@@ -106,3 +106,4 @@ cal_fingerprint
 *.pkl
 *.cif
 /.vscode
+/generated_structs
